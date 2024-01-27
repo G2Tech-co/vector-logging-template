@@ -1,0 +1,31 @@
+sources:
+  caddy:
+    type: "docker_logs"
+
+sinks:
+  better_stack:
+    type: "http"
+    method: "post"
+    inputs: ["caddy"]
+    uri: "https://in.logs.betterstack.com/"
+    encoding:
+      codec: "json"
+    auth:
+      strategy: "bearer"
+      token: "YOUR_TOKEN"
+
+# sinks:
+#   console:
+#     inputs:
+#       - caddy
+#     target: stdout
+#     type: console
+#     encoding:
+#       codec: json
+
+# curl -X POST \
+# -H 'Content-Type: application/json' \
+# -H 'Authorization: Bearer YOUR_TOKEN' \
+# -d '{"dt":"'"$(date -u +'%Y-%m-%d %T UTC')"'","message":"Hello from Better Stack!"}' \
+# -k \
+# https://in.logs.betterstack.com

@@ -1,0 +1,29 @@
+services:
+  caddy:
+    image: caddy:2.7.6-alpine
+    container_name: caddy
+    restart: always
+    ports:
+      - '8080:80'
+      # - '443:443'
+    volumes:
+      # - caddy-config:/config
+      # - caddy-data:/data
+      - ./Caddyfile:/etc/caddy/Caddyfile
+
+  vector:
+    image: timberio/vector:0.35.0-alpine
+    container_name: vector
+    restart: always
+    volumes:
+      - ./vector.yaml:/etc/vector/vector.yaml
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  backend:
+    image: traefik/whoami:v1.10.1
+    container_name: backend
+    restart: always
+
+# volumes:
+#   caddy-config:
+#   caddy-data:
