@@ -1,16 +1,18 @@
 api:
-  enabled: true
+  enabled: false
 
 sources:
-  vector:
-    type: docker_logs
+  vectorـagent:
+    type: vector
+    address: 192.168.16.2:5124
 
 sinks:
   loki:
     type: loki
     endpoint: 'http://loki:3100'
-    healthcheck.enabled: false
-    inputs: ["vector"]
+    healthcheck:
+      enabled: false
+    inputs: ["vectorـagent"]
     encoding:
       codec: json
     labels:

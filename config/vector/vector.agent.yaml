@@ -1,0 +1,23 @@
+api:
+  enabled: false
+
+sources:
+  caddy:
+    type: docker_logs
+
+sinks:
+  vector_central:
+    type: vector
+    inputs:
+      - caddy
+    address: vector_central:5123
+    healthcheck:
+      enabled: false
+
+  # console:
+  #   type: console
+  #   target: stdout
+  #   inputs:
+  #     - vector
+  #   encoding:
+  #     codec: json

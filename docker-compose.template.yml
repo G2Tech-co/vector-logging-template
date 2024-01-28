@@ -1,8 +1,15 @@
 services:
-  vector:
-    image: timberio/vector:0.35.0-alpine
+  vector_agent:
+    image: docker.arvancloud.ir/timberio/vector:0.35.0-alpine
     container_name: vector
-    restart: always
     volumes:
-      - ./vector.yaml:/etc/vector/vector.yaml
+      - ./config/vector/vector.agent.yaml:/etc/vector/vector.yaml:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 600M
+    logging:
+      options:
+        max-size: "1024m"

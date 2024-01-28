@@ -1,0 +1,11 @@
+:80 {
+  redir /api /api/
+
+  handle_path /api/* {
+    reverse_proxy backend:80
+  }
+
+  log {
+    output stdout
+  }
+}

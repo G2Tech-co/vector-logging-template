@@ -12,6 +12,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - internal_central
     deploy:
       resources:
         limits:
@@ -22,16 +24,18 @@ services:
         max-size: "1024m"
 
   grafana:
-    image: docker.arvancloud.ir/grafana/grafana:10.3.1
+    image: docker.arvancloud.ir/grafana/grafana-oss:10.3.1
     container_name: grafana
     ports:
       - "127.0.0.1:3000:3000"
     environment:
       # - GF_LOG_LEVEL=warn
       - GF_ANALYTICS_REPORTING_ENABLED=false
-    volumes:
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+    # volumes:
       # - grafana:/var/lib/grafana
-      - ./config/grafana/datasource_loki.yml:/etc/grafana/provisioning/datasource_loki.yml
+    networks:
+      - internal_central
     healthcheck:
       test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1" ]
       interval: 10s
@@ -49,14 +53,16 @@ services:
       options:
         max-size: "1024m"
 
-  vector:
+  vector_central:
     image: docker.arvancloud.ir/timberio/vector:0.35.0-alpine
-    container_name: vector
+    container_name: vector_central
     ports:
       - "5123:5123/udp"
     volumes:
-      - ./config/vector/vector.yaml:/etc/vector/vector.yaml:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config/vector/vector.central.yaml:/etc/vector/vector.yaml:ro
+    networks:
+      - internal_central
+      - vector_central
     depends_on:
       loki:
         condition: service_healthy
@@ -71,3 +77,8 @@ services:
 
 # volumes:
 #   grafana:
+
+networks:
+  internal_central:
+  vector_central:
+    name: vector_central

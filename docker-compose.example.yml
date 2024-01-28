@@ -3,27 +3,41 @@ services:
     image: caddy:2.7.6-alpine
     container_name: caddy
     restart: always
+    networks:
+      - internal
     ports:
       - '8080:80'
-      # - '443:443'
     volumes:
-      # - caddy-config:/config
-      # - caddy-data:/data
-      - ./Caddyfile:/etc/caddy/Caddyfile
-
-  vector:
-    image: timberio/vector:0.35.0-alpine
-    container_name: vector
-    restart: always
-    volumes:
-      - ./vector.yaml:/etc/vector/vector.yaml
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config/caddy/Caddyfile:/etc/caddy/Caddyfile
 
   backend:
     image: traefik/whoami:v1.10.1
     container_name: backend
     restart: always
+    networks:
+      - internal
 
-# volumes:
-#   caddy-config:
-#   caddy-data:
+  vector_agent:
+    image: docker.arvancloud.ir/timberio/vector:0.35.0-alpine
+    container_name: vector_agent
+    volumes:
+      - ./config/vector/vector.agent.yaml:/etc/vector/vector.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - internal
+      - vector_central
+    ports:
+      - "5124:5123"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 600M
+    logging:
+      options:
+        max-size: "1024m"
+
+networks:
+  internal:
+  vector_central:
+    external: true
