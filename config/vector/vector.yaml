@@ -1,0 +1,25 @@
+api:
+  enabled: true
+
+sources:
+  vector:
+    type: docker_logs
+
+sinks:
+  loki:
+    type: loki
+    endpoint: 'http://loki:3100'
+    healthcheck.enabled: false
+    inputs: ["vector"]
+    encoding:
+      codec: json
+    labels:
+      logsource: vector_internal_container
+
+  # console:
+  #   type: console
+  #   target: stdout
+  #   inputs:
+  #     - vector
+  #   encoding:
+  #     codec: json
